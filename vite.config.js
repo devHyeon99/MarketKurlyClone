@@ -1,5 +1,6 @@
 import { resolve } from 'node:path';
 import { defineConfig } from 'vite';
+import { visualizer } from 'rollup-plugin-visualizer';
 
 export default defineConfig({
   resolve: {
@@ -7,11 +8,9 @@ export default defineConfig({
     alias: { '@': resolve(__dirname, 'src') },
   },
   build: {
-    // 빌드 결과물이 저장될 폴더를 dist로 설정
     outDir: 'dist',
     rollupOptions: {
       input: {
-        // 기본 입력 파일을 설정 (index.html이 최상위 폴더 내에 위치한다고 가정)
         main: resolve(__dirname, 'index.html'),
         login: resolve(__dirname, 'src/pages/login/index.html'),
         register: resolve(__dirname, 'src/pages/register/index.html'),
@@ -24,26 +23,16 @@ export default defineConfig({
     },
   },
   server: {
-    // 개발 서버 설정
-    port: 3000, // 개발 서버 포트 번호를 3000으로 설정
-    open: false, // 서버 시작 시 브라우저 자동 열기
+    port: 3000,
+    open: false,
   },
-  css: {
-    // CSS 전처리기 옵션 설정
-    preprocessorOptions: {
-      scss: {
-        // SCSS 변수 파일을 모든 SCSS 파일에 자동으로 포함
-        additionalData: `
-          @import "@/styles/base/reset.scss";
-          @import "@/styles/abstracts/variables.scss";
-          @import "@/styles/base/fonts.scss";
-          @import "@/styles/abstracts/mixins.scss";
-        `,
-      },
-      modules: {
-        scopeBehaviour: 'local', // CSS Modules를 사용하여 CSS의 범위를 모듈 단위로 제한
-      },
-    },
-  },
-  plugins: [],
+  plugins: [
+    // 플러그인 배열에 visualizer를 추가합니다.
+    visualizer({
+      open: true, // 빌드 후 자동으로 시각화 결과물을 브라우저에서 엽니다.
+      filename: 'dist/stats.html', // 분석 결과 파일 이름
+      gzipSize: true, // gzip 압축 후 크기를 보여줍니다.
+      brotliSize: true, // brotli 압축 후 크기를 보여줍니다.
+    }),
+  ],
 });
