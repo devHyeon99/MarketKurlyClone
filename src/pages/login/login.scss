@@ -1,3 +1,6 @@
+@use '@/styles/base';
+@use '@/styles/abstracts' as *;
+
 input {
   @include size(18.75rem, 1.625rem);
   padding: 0.75rem 1.25rem;

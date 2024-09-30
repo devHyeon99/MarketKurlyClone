@@ -1,3 +1,6 @@
+@use '@/styles/base';
+@use '@/styles/abstracts' as *;
+
 // 변수 정의
 $gallery-padding: 1.25rem 0 1.875rem 0;
 $icon-padding: 0 0.5rem;

@@ -1,3 +1,6 @@
+@use '@/styles/base';
+@use '@/styles/abstracts' as *;
+
 .main {
   @include flex(column, _, center);
   width: 100%;

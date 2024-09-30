@@ -1,3 +1,6 @@
+@use '@/styles/base';
+@use '@/styles/abstracts' as *;
+
 .footer {
   @include flex(column, center, center);
   width: 100%;
@@ -80,7 +83,7 @@
       line-height: 160%;
 
       a {
-        color: $primary-color;
+        color: $blue-500-color;
       }
     }
   }
@@ -101,8 +104,13 @@
     font-size: $paragraph-small;
     line-height: 160%;
 
+    &-box {
+      @include flex(row);
+      gap: 0.25rem;
+    }
+
     a {
-      color: $primary-color;
+      color: $blue-500-color;
     }
   }
 

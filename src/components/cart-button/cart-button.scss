@@ -1,3 +1,6 @@
+@use '@/styles/base';
+@use '@/styles/abstracts' as *;
+
 .cart-dialog-wrapper {
   @include flex(column nowrap, space-between);
   gap: 1.75rem;

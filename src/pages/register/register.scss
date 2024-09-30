@@ -1,3 +1,6 @@
+@use '@/styles/base';
+@use '@/styles/abstracts' as *;
+
 body {
   @include flex(column);
   margin: 0 auto;
