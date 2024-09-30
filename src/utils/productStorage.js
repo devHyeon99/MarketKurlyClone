@@ -8,6 +8,6 @@ export const getViewedProducts = () => {
   }
 };
 
-export const saveViewedProducts = (products) => {
+export const setViewedProducts = (products) => {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(products));
 };
