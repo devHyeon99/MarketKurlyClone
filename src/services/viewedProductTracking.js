@@ -16,8 +16,6 @@ export const setupViewedProductTracking = () => {
       const anchor = e.target.closest('.product-item__link');
       if (!anchor) return;
 
-      console.log(anchor);
-
       const id = anchor.dataset.id;
       const image = anchor.dataset.image;
 

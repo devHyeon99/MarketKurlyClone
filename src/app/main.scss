@@ -1,9 +1,11 @@
-/* 변수 */
+@use '@/styles/base';
+@use '@/styles/abstracts' as *;
 
+/* 변수 */
 $width: 65.625rem;
+$height: 40.949375rem;
 
 /* 공통 적용 */
-
 a {
   display: inline-block;
 }
@@ -55,7 +57,7 @@ a {
 .product-list {
   @include flex(column nowrap);
   position: relative;
-  @include size($width);
+  @include size($width, $height);
   margin: 0 auto;
   padding: $rem-2-5 0;
   line-height: $line-height;
@@ -196,15 +198,22 @@ a {
 }
 
 /* 프로모션 배너 */
-
 .promotion-banner {
-  @include size($width);
-  margin: 0 auto;
+  display: flex;
+  justify-content: center;
   padding: $rem-2-5 0;
 
-  &__img {
-    @include size($width, 8.6875rem);
+  img {
+    display: block;
+    width: 100%;
+    height: auto;
     background-color: $gray-100-color;
-    background-image: url('/assets/images/banner/line-banner01.webp');
   }
+}
+
+.skelton-wrapper {
+  display: flex;
+  flex-direction: row;
+  gap: 1.125rem;
+  width: 100%;
 }
