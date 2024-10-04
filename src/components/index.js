@@ -8,3 +8,5 @@ export * from './product-inquiry/product-inquiry.js';
 export * from './cart-button/cart-button.js';
 export * from './modal/modal.js';
 export * from './side-filter-panel/side-filter-panel.js';
+export * from './product-card-skeleton/product-card-skeleton.js';
+export * from './product-card/productCard';

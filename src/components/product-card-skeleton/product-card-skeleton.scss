@@ -1,0 +1,64 @@
+@use '@/styles/base';
+@use '@/styles/abstracts' as *;
+
+:host {
+  display: block;
+  width: 100%;
+  max-width: 249px;
+}
+
+.skeleton {
+  animation: pulse 1.5s infinite ease-in-out;
+  background-color: #e0e0e0;
+  border-radius: 4px;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.product-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  &__img {
+    width: 249px;
+    height: 320px;
+    aspect-ratio: 1/1;
+    border-radius: 8px;
+  }
+
+  &__title,
+  .price-group > div,
+  &__reviews {
+    height: 16px;
+    border-radius: 4px;
+  }
+
+  &__title {
+    width: 80%;
+  }
+
+  &__reviews {
+    width: 50%;
+  }
+}
+
+.price-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+c-cart {
+  display: none;
+}
