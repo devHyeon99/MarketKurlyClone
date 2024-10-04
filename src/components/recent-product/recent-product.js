@@ -32,7 +32,7 @@ export class Sidebar extends HTMLElement {
   }
 
   getViewedProducts() {
-    const viewedProducts = localStorage.getItem('viewedProducts');
+    const viewedProducts = localStorage.getItem('viewed_products');
     return viewedProducts ? JSON.parse(viewedProducts) : [];
   }
 

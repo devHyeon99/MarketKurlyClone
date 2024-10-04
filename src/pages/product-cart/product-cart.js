@@ -1,7 +1,7 @@
 import './product-cart.scss';
-import { defineCustomElements } from '@/utils/index';
+import { defineCustomElements, getImageUrl } from '@/utils/index';
 import { footer, header, headerSmall } from '@/components/index';
-import { pb, getImageUrl } from '@/api/index';
+import { pb } from '@/api/index';
 
 // 사용자 정의 커스텀 요소 목록 정의
 const CUSTOM_ELEMENTS = [

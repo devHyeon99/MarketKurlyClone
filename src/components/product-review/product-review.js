@@ -2,8 +2,8 @@ import './product-review.scss';
 import '@/components/modal/modal.scss';
 import css from './product-review.scss?inline';
 import css2 from '@/components/review-modal/modal.scss?inline';
-import pb from '@/api/pocketbase';
-import getImageUrl from '@/api/imageUrl';
+import { pb } from '@/api';
+import { getImageUrl } from '@/utils';
 
 const reviewTemplate = document.createElement('template');
 reviewTemplate.innerHTML = `

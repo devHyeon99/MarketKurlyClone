@@ -64,10 +64,11 @@ footerTemplate.innerHTML = `
               </ul>
             </nav>
             <address class="footer__address">
-              <p>
-                법인명 (상호) : 주식회사 칼리 | 사업자등록번호 : 261-81-23567 |
+              <div class="footer__address-box">
+                <p>법인명 (상호) : 주식회사 칼리 | 사업자등록번호 : 261-81-23567</p>
+                <span aria-hidden>|</span>
                 <a href="#" class="footer__address-link">사업자정보 확인</a>
-              </p>
+              </div>
               <p>통신판매업 : 제 2018-서울강남-01646 호 | 개인정보보호책임자 : 이원준</p>
               <p>주소 : 서울특별시 강남구 테헤란로 133, 18층(역삼동) | 대표이사 : 김슬아</p>
               <p>

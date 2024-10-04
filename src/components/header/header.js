@@ -1,216 +1,26 @@
-import './header.scss';
+import styles from './header.scss?inline';
+import templateHTML from './index.html?raw';
 import { cart } from '@/utils/cart';
-import { defaultAuthData, pb } from '@/api/index';
-import css from './header.scss?inline';
+import { pb } from '@/api/index';
+import { defaultAuthData } from '@/constants';
 
-const headerTemplate = document.createElement('template');
-headerTemplate.innerHTML = `
-  <style>${css}</style>
-    <header class="karly-header">
-      <div class="top-banner" role="banner">
-        <nav class="top-banner__nav" aria-label="프로모션 배너">
-          <a
-            href="/src/pages/register/"
-            class="top-banner__link"
-            aria-label="
-            지금 가입하고 인기상품 100원에 받아가세요! 회원 가입 페이지로 이동
-          "
-          >
-            지금 가입하고 인기상품 <span>100원</span>에 받아가세요!
-          </a>
-          <button class="top-banner__close" aria-label="프로모션 배너 닫기">
-            <img src="/assets/icons/header/Close.png" alt="" />
-          </button>
-        </nav>
-      </div>
-      <div class="header-top">
-        <div class="auth-links">
-        </div>
-        <div class="search-area">
-          <div class="logo-section">
-            <a href="/" aria-label="마켓칼리 홈으로 이동">
-              <img src="/assets/images/header/logo.svg" alt="마켓칼리" aria-hidden="true"/>
-            </a>
-            <a
-              href="/"
-              class="logo-link logo-link-is-active"
-              aria-pressed="true"
-              aria-label="마켓칼리 페이지로 이동"
-              >마켓칼리</a
-            >
-            <div class="divider" aria-hidden="true"></div>
-            <a href="/" class="logo-link" aria-pressed="false" aria-label="뷰티칼리 페이지로 이동"
-              >뷰티칼리</a
-            >
-          </div>
-          <div class="search-box">
-            <label for="product_search" class="sr-only">상품 검색</label>
-            <input type="text" id="product_search" placeholder="검색어를 입력해주세요" />
-            <button type="button" class="product_search_button" aria-label="검색"></button>
-          </div>
-          <ul class="user-actions">
-            <li>
-              <button
-                class="user-actions__location"
-                type="button"
-                aria-label="배송지 등록"
-              ></button>
-            </li>
-            <div class="location-tooltip">
-
-            </div>
-            <li>
-              <a
-                href="#"
-                class="user-actions__wishlist"
-                role="button"
-                aria-label="찜한 상품 목록 페이지로 이동"
-              ></a>
-            </li>
-            <li>
-              <a
-                href="/src/pages/product-cart/"
-                class="user-actions__cart" 
-                role="button" 
-                aria-label="장바구니 페이지로 이동"
-              ></a>
-            </li>
-          </ul>
-        </div>
-      </div>
-      <nav class="header-nav" aria-label="메인 네비게이션">
-        <div class="category-menu">
-          <span class="category-menu__icon" aria-hidden="true"></span>
-          <button class="category-menu__text" aria-controls="menu-container">카테고리</button>
-          <div class="menu-container">
-            <div class="menu-box">
-              <ul class="menu-list">
-                <li class="menu-list__item">
-                  <img src="/assets/icons/Menu/Gift.png" alt="선물하기" aria-hidden="true" />
-                  <a href="/src/pages/product-list/?category=선물하기" aria-label="선물하기 카테고리로 이동">선물하기</a>
-                </li>
-                <li class="menu-list__item">
-                  <img src="/assets/icons/Menu/Vegetable.png" alt="채소" aria-hidden="true" />
-                  <a href="/src/pages/product-list/?category=채소" aria-label="채소 카테고리로 이동">채소</a>
-                </li>
-                <li class="menu-list__item">
-                  <img src="/assets/icons/Menu/Fruit.png" alt="과일·견과·쌀" aria-hidden="true" />
-                  <a href="/src/pages/product-list/?category=과일·견과·쌀" aria-label="과일·견과·쌀 카테고리로 이동">과일·견과·쌀</a>
-                </li>
-                <li class="menu-list__item">
-                  <img src="/assets/icons/Menu/SeaFood.png" alt="수산·해산·건어물" aria-hidden="true" />
-                  <a href="/src/pages/product-list/?category=수산·해산·건어물" aria-label="수산·해산·건어물 카테고리로 이동">수산·해산·건어물</a>
-                </li>
-                <li class="menu-list__item">
-                  <img src="/assets/icons/Menu/Meet.png" alt="정육·계란" aria-hidden="true" />
-                  <a href="/src/pages/product-list/?category=정육·계란" aria-label="정육·계란 카테고리로 이동">정육·계란</a>
-                </li>
-                <li class="menu-list__item">
-                  <img src="/assets/icons/Menu/Cook.png" alt="국·반찬·메인요리" aria-hidden="true" />
-                  <a href="/src/pages/product-list/?category=국·반찬·메인요리" aria-label="국·반찬·메인요리 카테고리로 이동">국·반찬·메인요리</a>
-                </li>
-                <li class="menu-list__item">
-                  <img src="/assets/icons/Menu/Salad.png" alt="샐러드·간편식" aria-hidden="true" />
-                  <a href="/src/pages/product-list/?category=샐러드·간편식" aria-label="샐러드·간편식 카테고리로 이동">샐러드·간편식</a>
-                </li>
-                <li class="menu-list__item">
-                  <img src="/assets/icons/Menu/Oil.png" alt="면·양념·오일" aria-hidden="true" />
-                  <a href="/src/pages/product-list/?category=면·양념·오일" aria-label="면·양념·오일 카테고리로 이동">면·양념·오일</a>
-                </li>
-                <li class="menu-list__item">
-                  <img src="/assets/icons/Menu/Coffee.png" alt="생수·음료·우유·커피" aria-hidden="true" />
-                  <a href="/src/pages/product-list/?category=생수·음료·우유·커피" aria-label="생수·음료·우유·커피 카테고리로 이동">생수·음료·우유·커피</a>
-                </li>
-                <li class="menu-list__item">
-                  <img src="/assets/icons/Menu/Snack.png" alt="간식·과자·떡" aria-hidden="true" />
-                  <a href="/src/pages/product-list/?category=간식·과자·떡" aria-label="간식·과자·떡 카테고리로 이동">간식·과자·떡</a>
-                </li>
-                <li class="menu-list__item">
-                  <img src="/assets/icons/Menu/Bread.png" alt="베이커리·치즈·델리" aria-hidden="true" />
-                  <a href="/src/pages/product-list/?category=베이커리·치즈·델리" aria-label="베이커리·치즈·델리 카테고리로 이동">베이커리·치즈·델리</a>
-                </li>
-                <li class="menu-list__item">
-                  <img src="/assets/icons/Menu/Health.png" alt="건강식품" aria-hidden="true" />
-                  <a href="/src/pages/product-list/?category=건강식품" aria-label="건강식품 카테고리로 이동">건강식품</a>
-                </li>
-                <li class="menu-list__item">
-                  <img src="/assets/icons/Menu/Wine.png" alt="와인" aria-hidden="true" />
-                  <a href="/src/pages/product-list/?category=와인" aria-label="와인 카테고리로 이동">와인</a>
-                </li>
-                <li class="menu-list__item">
-                  <img src="/assets/icons/Menu/Traditional-Liquor.png" alt="전통주" aria-hidden="true" />
-                  <a href="/src/pages/product-list/?category=전통주" aria-label="전통주 카테고리로 이동">전통주</a>
-                </li>
-                <li class="menu-list__item">
-                  <img src="/assets/icons/Menu/Detergent.png" alt="생활용품·리빙·캠핑" aria-hidden="true" />
-                  <a href="/src/pages/product-list/?category=생활용품·리빙·캠핑" aria-label="생활용품·리빙·캠핑 카테고리로 이동">생활용품·리빙·캠핑</a>
-                </li>
-                <li class="menu-list__item">
-                  <img src="/assets/icons/Menu/Cosmetics.png" alt="스킨케어·메이크업" aria-hidden="true" />
-                  <a href="/src/pages/product-list/?category=스킨케어·메이크업" aria-label="스킨케어·메이크업 카테고리로 이동">스킨케어·메이크업</a>
-                </li>
-                <li class="menu-list__item">
-                  <img src="/assets/icons/Menu/Shampoo.png" alt="헤어·바디·구강" aria-hidden="true" />
-                  <a href="/src/pages/product-list/?category=헤어·바디·구강" aria-label="헤어·바디·구강 카테고리로 이동">헤어·바디·구강</a>
-                </li>
-                <li class="menu-list__item">
-                  <img src="/assets/icons/Menu/Food.png" alt="주방용품" aria-hidden="true" />
-                  <a href="/src/pages/product-list/?category=주방용품" aria-label="주방용품 카테고리로 이동">주방용품</a>
-                </li>
-                <li class="menu-list__item">
-                  <img src="/assets/icons/Menu/HomeAppliances.png" alt="가전제품" aria-hidden="true" />
-                  <a href="/src/pages/product-list/?category=가전제품" aria-label="가전제품 카테고리로 이동">가전제품</a>
-                </li>
-                <li class="menu-list__item">
-                  <img src="/assets/icons/Menu/Dog.png" alt="반려동물" aria-hidden="true" />
-                  <a href="/src/pages/product-list/?category=반려동물" aria-label="반려동물 카테고리로 이동">반려동물</a>
-                </li>
-                <li class="menu-list__item">
-                  <img src="/assets/icons/Menu/Baby.png" alt="베이비·키즈·완구" aria-hidden="true" />
-                  <a href="/src/pages/product-list/?category=베이비·키즈·완구" aria-label="베이비·키즈·완구 카테고리로 이동">베이비·키즈·완구</a>
-                </li>
-                <li class="menu-list__item">
-                  <img src="/assets/icons/Menu/Travel.png" alt="여행·티켓" aria-hidden="true" />
-                  <a href="/src/pages/product-list/?category=여행·티켓" aria-label="여행·티켓 카테고리로 이동">여행·티켓</a>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-        <ul class="shopping-categories">
-          <li class="category-item">
-            <a class="category-item__link" href="/src/pages/product-collection/?category=recent" aria-label="신상품 카테고리 페이지로 이동">신상품</a>
-          </li>
-          <li class="category-item">
-            <a class="category-item__link" href="/src/pages/product-collection/?category=best" aria-label="베스트 카테고리 페이지로 이동">베스트</a>
-          </li>
-          <li class="category-item">
-            <a class="category-item__link" href="/src/pages/product-collection/?category=discount" aria-label="알뜰쇼핑 카테고리 페이지로 이동">알뜰쇼핑</a>
-          </li>
-          <li class="category-item">
-            <a class="category-item__link" href="/src/pages/product-list/" aria-label="전체보기 카테고리 페이지로 이동">전체보기</a>
-          </li>
-        </ul>
-        <a href="/src/pages/delivery/" class="notification" aria-label="배송 안내"><span>샛별·낮</span> 배송안내</a>
-      </nav>
-    </header>
-    <c-modal width="400px" height="190px">
-      <h2 slot="header" class="modal-header"></h2>
-      <h3 slot="header" class="modal-sub-header"></h3>
-      <span slot="header" class="modal-divider"></span>
-      <input slot="body" class="modal__input" type="text" placeholder="등록할 주소를 입력 해주세요."/>
-      <div slot="footer" class="modal-button-group">
-        <button slot="footer" type="button" class="modal__close" id="close-btn" aria-label="배송지 등록 모달창 닫기">닫기</button>
-        <button slot="footer" class="modal__address-change" type="button" aria-label="배송지 등록 하기">등록하기</button>
-      </div>
-    </c-modal>
-`;
 export class header extends HTMLElement {
   constructor() {
     super();
     // Shadow DOM을 사용하여 캡슐화된 스타일과 마크업 생성
     this.attachShadow({ mode: 'open' });
-    this.shadowRoot.appendChild(headerTemplate.content.cloneNode(true));
+
+    // 1. HTML 템플릿 준비
+    const template = document.createElement('template');
+    template.innerHTML = templateHTML;
+
+    // 2. 스타일 태그 준비
+    const style = document.createElement('style');
+    style.textContent = styles; // import한 CSS 문자열을 삽입
+
+    // 3. Shadow DOM에 스타일과 HTML을 모두 추가
+    // append 여러 노드를 한 번에 추가
+    this.shadowRoot.append(style, template.content.cloneNode(true));
 
     this.initElements();
     this.usingKeyboard = false;
@@ -271,6 +81,11 @@ export class header extends HTMLElement {
       this.elements.categoryMenu,
       () => this.showElement(this.elements.menuContainer),
       () => this.hideWithDelay(this.elements.menuContainer)
+    );
+    this.addToggleEvents(
+      this.elements.categoryMenu,
+      () => this.toggleMenu(true),
+      () => this.toggleMenu(false)
     );
     this.addToggleEvents(
       this.elements.locationButton,
@@ -345,6 +160,13 @@ export class header extends HTMLElement {
         }
       }
     }, 0);
+  }
+
+  toggleMenu(expand = true) {
+    const { categoryMenuButton, menuContainer } = this.elements;
+
+    menuContainer.hidden = !expand;
+    categoryMenuButton.setAttribute('aria-expanded', String(expand));
   }
 
   // 배너 닫기 처리: localStorage를 사용한 상태 저장

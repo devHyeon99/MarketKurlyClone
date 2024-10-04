@@ -1,6 +1,6 @@
 import './register.scss';
 import './add-options';
-import pb from '@/api/pocketbase';
+import { pb } from '@/api';
 import { defineCustomElements } from '@/utils/index';
 import { footer, header, headerSmall } from '@/components/index';
 import { setupUsernameValidation } from './username-validation';

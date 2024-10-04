@@ -1,7 +1,7 @@
 import './product-list.scss';
-import { defineCustomElements } from '@/utils/index';
+import { defineCustomElements, getImageUrl } from '@/utils';
 import { CartButton, footer, header, SideFilter, headerSmall, Sidebar } from '@/components/index';
-import { pb, getImageUrl } from '@/api/index';
+import { pb } from '@/api';
 
 (function () {
   // 페이지 수 상수로 정의

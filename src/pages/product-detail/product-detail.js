@@ -1,7 +1,7 @@
 import './product-detail.scss';
-import { defineCustomElements, cart, addToCart } from '@/utils/index';
+import { defineCustomElements, cart, addToCart, getImageUrl } from '@/utils/index';
 import { footer, header, review, inquiry, headerSmall } from '@/components/index';
-import { pb, getImageUrl } from '@/api/index';
+import { pb } from '@/api/index';
 
 // 사용자 정의 커스텀 요소 목록 정의
 const CUSTOM_ELEMENTS = [
