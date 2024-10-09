@@ -58,12 +58,9 @@ export const createProductCard = (product) => {
           data-image="${imageUrl}"
           aria-label="${product.product_name} 상품 페이지"
         >
-          <div
-            class="product-item__img"
-            role="img"
-            aria-label="${product.product_name}"
-            style="background-image: url(${imageUrl})"
-          ></div>
+          <div class="product-item__img-wrapper">
+            <img src="${imageUrl}" alt="${product.product_name}" class="product-item__img" />
+          </div>
           <p class="product-item__title">${product.product_name}</p>
           <div class="price-group">
             <p class="${priceClass}"><span class="sr-only">정가</span>${productPriceHtml}</p>

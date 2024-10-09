@@ -119,17 +119,22 @@ a {
     @include size(15.5625rem, 29.5rem);
   }
 
+  &__img-wrapper {
+    @include size(100%, 20rem);
+    overflow: hidden;
+    border-radius: $rem-0-25;
+  }
+
   &__img {
     @include size(100%, 20rem);
     background-color: $gray-100-color;
     background-position: center center;
-    border-radius: $rem-0-25;
     background-size: 100%;
     transition: background-size 0.3s ease;
   }
 
   &__img:hover {
-    background-size: 110%;
+    transform: scale(1.1);
   }
 
   &__title {
