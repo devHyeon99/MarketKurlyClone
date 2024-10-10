@@ -1,6 +1,6 @@
 import './product-collection.scss';
 import { defineCustomElements, getImageUrl } from '@/utils/index';
-import { CartButton, footer, header, headerSmall, Sidebar, SideFilter } from '@/components/index';
+import { CartButton, footer, header, headerSmall, RecentProduct, SideFilter } from '@/components/index';
 import { pb } from '@/api/index';
 
 (function () {
@@ -291,7 +291,7 @@ import { pb } from '@/api/index';
       ['c-footer', footer],
       ['c-cart', CartButton],
       ['c-sidebar-category', SideFilter],
-      ['c-sidebar', Sidebar],
+      ['c-recent-product', RecentProduct],
     ]);
 
     const filterContainer = document.querySelector('.product-filter__list');

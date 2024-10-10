@@ -18,7 +18,7 @@ sidebarTemplate.innerHTML = `
     </div>
 `;
 
-export class Sidebar extends HTMLElement {
+export class RecentProduct extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
@@ -89,7 +89,7 @@ export class Sidebar extends HTMLElement {
 
 // 전역 이벤트 리스너 추가 'productViewed' 이벤트가 발생했을 때 사이드바를 업데이트
 window.addEventListener('productViewed', () => {
-  const sidebar = document.querySelector('c-sidebar');
+  const sidebar = document.querySelector('c-recent-product');
   if (sidebar) {
     sidebar.updateSidebar();
   }
