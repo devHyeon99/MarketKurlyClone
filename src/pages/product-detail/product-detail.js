@@ -1,5 +1,6 @@
 import './product-detail.scss';
-import { defineCustomElements, cart, addToCart, getImageUrl } from '@/utils/index';
+import { defineCustomElements, getImageUrl } from '@/utils/index';
+import { cart, addToCart } from '@/services/cart';
 import { footer, header, review, inquiry, headerSmall } from '@/components/index';
 import { pb } from '@/api/index';
 

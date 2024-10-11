@@ -1,5 +1,5 @@
 import './header-small.scss';
-import { cart } from '@/utils/cart';
+import { cart } from '@/services/cart';
 import { pb } from '@/api/index';
 import styles from './header-small.scss?inline';
 import templateHTML from './index.html?raw';

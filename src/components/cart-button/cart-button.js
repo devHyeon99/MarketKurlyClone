@@ -1,5 +1,5 @@
 import './cart-button.scss';
-import { cart, addToCart } from '@/utils/index';
+import { cart, addToCart } from '@/services/cart';
 import css from './cart-button.scss?inline';
 
 const cartButtonTemplate = document.createElement('template');
