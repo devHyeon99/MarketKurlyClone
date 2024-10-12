@@ -1,4 +1,4 @@
-import { pb } from './index';
+import { pb } from './pocketbase';
 
 /**
  * 추천 상품 목록을 가져오는 함수

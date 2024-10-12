@@ -1,4 +1,4 @@
-import { createProductCard, createViewAllCard } from '@/components';
+import { createProductCard, createViewAllCard } from '@/components/product-card/productCard';
 
 /**
  * 상품 목록 섹션을 렌더링하는 함수

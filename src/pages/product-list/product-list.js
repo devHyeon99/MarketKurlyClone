@@ -1,7 +1,12 @@
 import './product-list.scss';
 import { defineCustomElements, getImageUrl } from '@/utils';
-import { CartButton, footer, header, SideFilter, headerSmall, RecentProduct } from '@/components/index';
 import { pb } from '@/api';
+import { header } from '@/components/header/header';
+import { headerSmall } from '@/components/header-small/header-small';
+import { footer } from '@/components/footer/footer';
+import { CartButton } from '@/components/cart-button/cart-button';
+import { SideFilter } from '@/components/side-filter-panel/side-filter-panel';
+import { RecentProduct } from '@/components/recent-product/recent-product';
 
 (function () {
   // 페이지 수 상수로 정의

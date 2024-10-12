@@ -1,7 +1,13 @@
 import './product-collection.scss';
 import { defineCustomElements, getImageUrl } from '@/utils/index';
-import { CartButton, footer, header, headerSmall, RecentProduct, SideFilter } from '@/components/index';
+
 import { pb } from '@/api/index';
+import { header } from '@/components/header/header';
+import { headerSmall } from '@/components/header-small/header-small';
+import { footer } from '@/components/footer/footer';
+import { CartButton } from '@/components/cart-button/cart-button';
+import { SideFilter } from '@/components/side-filter-panel/side-filter-panel';
+import { RecentProduct } from '@/components/recent-product/recent-product';
 
 (function () {
   const ITEMS_PER_PAGE = 15;

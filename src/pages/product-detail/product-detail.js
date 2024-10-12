@@ -1,8 +1,12 @@
 import './product-detail.scss';
 import { defineCustomElements, getImageUrl } from '@/utils/index';
 import { cart, addToCart } from '@/services/cart';
-import { footer, header, review, inquiry, headerSmall } from '@/components/index';
 import { pb } from '@/api/index';
+import { header } from '@/components/header/header';
+import { headerSmall } from '@/components/header-small/header-small';
+import { footer } from '@/components/footer/footer';
+import { review } from '@/components/product-review/product-review';
+import { inquiry } from '@/components/product-inquiry/product-inquiry';
 
 // 사용자 정의 커스텀 요소 목록 정의
 const CUSTOM_ELEMENTS = [

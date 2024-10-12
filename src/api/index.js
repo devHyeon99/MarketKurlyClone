@@ -1,2 +1,2 @@
 export { pb } from './pocketbase.js';
-export * from './products.js';
+export { getRecommendedProducts, getDiscountedProducts } from './products.js';

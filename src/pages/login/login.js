@@ -1,7 +1,9 @@
 import './login.scss';
 import { defineCustomElements } from '@/utils/index';
-import { footer, header, headerSmall } from '@/components/index';
 import { pb } from '@/api/index';
+import { header } from '@/components/header/header';
+import { headerSmall } from '@/components/header-small/header-small';
+import { footer } from '@/components/footer/footer';
 
 const CUSTOM_ELEMENTS = [
   ['c-header', header],
