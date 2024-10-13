@@ -177,6 +177,20 @@
   display: flex;
   gap: 1.25rem;
 
+  &__item {
+    // 툴팁 위치의 기준점이 되도록 설정
+    position: relative;
+    padding-bottom: 0.4rem;
+    // li에 마우스를 올렸을 때
+    &:hover,
+    &:focus-within {
+      // 그 안의 .location-tooltip을 보여줌
+      .location-tooltip {
+        display: block;
+      }
+    }
+  }
+
   &__location {
     @include icon-button('/assets/icons/header/Location.svg');
   }
@@ -243,6 +257,19 @@
   &.focused {
     border-radius: 2px;
     outline: 2px solid #015ecc;
+  }
+
+  .menu-container {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 10;
+  }
+
+  &:hover .menu-container,
+  &:focus-within .menu-container {
+    display: block;
   }
 
   &:hover {
@@ -326,27 +353,43 @@
   overflow-y: scroll;
 }
 
-.menu-list__item {
+.menu-list {
   display: flex;
-  width: 14.7rem;
-  padding: 0.5rem 0rem 0.5rem 0.75rem;
-  align-items: flex-start;
-  gap: 0.5rem;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.5rem;
 
-  &.focused {
-    border-radius: 2px;
-    outline: 2px solid #015ecc;
-  }
+  &__item {
+    display: flex;
+    width: 14.7rem;
+    padding: 0.5rem 0rem 0.5rem 0.75rem;
+    align-items: flex-start;
+    gap: 0.5rem;
+    border-radius: 6px;
 
-  img {
-    width: 1.5rem;
-    height: 1.5rem;
-  }
+    a {
+      outline: none;
+      font-size: $label-medium;
+      line-height: 150%;
 
-  a {
-    outline: none;
-    font-size: $label-medium;
-    line-height: 150%;
+      &:focus {
+        color: #5f0080;
+        font-weight: 600;
+      }
+      &:hover {
+        color: $primary-color;
+        font-weight: 600;
+      }
+    }
+
+    img {
+      width: 1.5rem;
+      height: 1.5rem;
+    }
+
+    &:focus-within {
+      outline: 2px solid $primary-color;
+    }
   }
 }
 
@@ -463,16 +506,16 @@
     border-radius: 0.3125rem;
   }
 
-  &__close {
-    background-color: $white-color;
-    color: $primary-color;
-    padding: 0.5rem 1.8rem;
-    font-size: $label-medium;
-    font-weight: 500;
-    line-height: 150%;
-    border-radius: 0.3125rem;
-    border: 1px solid $primary-color;
-  }
+  // &__close {
+  //   background-color: $white-color;
+  //   color: $primary-color;
+  //   padding: 0.5rem 1.8rem;
+  //   font-size: $label-medium;
+  //   font-weight: 500;
+  //   line-height: 150%;
+  //   border-radius: 0.3125rem;
+  //   border: 1px solid $primary-color;
+  // }
 
   &-location {
     &-register__title {
@@ -498,51 +541,5 @@
       line-height: 150%;
       color: $primary-color;
     }
-  }
-}
-
-.logout-modal {
-  &__title {
-    margin-bottom: 0.5rem;
-    font-size: $label-large;
-    font-weight: 700;
-    line-height: 150%;
-    color: $primary-color;
-    text-align: center;
-  }
-
-  &__body {
-    margin: 2.5rem 0rem;
-    font-size: $paragraph-medium;
-    font-weight: 500;
-    line-height: 160%;
-    text-align: center;
-  }
-
-  &-button {
-    @include flex(row, center, center);
-    gap: 1rem;
-  }
-
-  &__close {
-    background-color: $white-color;
-    color: $primary-color;
-    padding: 0.5rem 1.8rem;
-    font-size: $label-medium;
-    font-weight: 500;
-    line-height: 150%;
-    border-radius: 0.3125rem;
-    border: 1px solid $primary-color;
-  }
-
-  &__logout {
-    background-color: $primary-color;
-    color: $white-color;
-    padding: 0.5rem 1.8rem;
-    font-size: $label-medium;
-    font-weight: 500;
-    line-height: 150%;
-    border-radius: 0.3125rem;
-    border: 1px solid $primary-color;
   }
 }

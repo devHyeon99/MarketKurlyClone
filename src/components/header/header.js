@@ -1,8 +1,10 @@
 import styles from './header.scss?inline';
 import templateHTML from './index.html?raw';
-import { cart } from '@/utils/cart';
-import { pb } from '@/api/index';
+import { createAuthLinksTemplate, createLocationTooltipTemplate } from './headerTemplates';
+import { cart } from '@/services/cart';
+import { getAuth } from '@/services';
 import { defaultAuthData } from '@/constants';
+import { pb } from '@/api';
 
 export class header extends HTMLElement {
   constructor() {
@@ -23,27 +25,21 @@ export class header extends HTMLElement {
     this.shadowRoot.append(style, template.content.cloneNode(true));
 
     this.initElements();
-    this.usingKeyboard = false;
     this.currentFocusedItem = null;
-    // Map을 사용하여 여러 요소의 타이머를 효율적으로 관리
     this.hideTimeouts = new Map();
     this.closeTime = localStorage.getItem('topBanner');
-    this.DELAY = 250; // 모든 지연에 사용되는 공통 값
+    this.DELAY = 250;
   }
 
   // 쿼리 셀렉터를 사용하여 필요한 DOM 요소 초기화
   initElements() {
     const selectors = {
-      categoryMenu: '.category-menu',
-      categoryMenuButton: '.category-menu__text',
-      menuContainer: '.menu-container',
-      menuLists: '.menu-list__item',
-      menuItems: '.menu-list__item a',
       locationButton: '.user-actions__location',
       locationTooltip: '.location-tooltip',
       topBanner: '.top-banner',
       topBannerCloseButton: '.top-banner__close',
       modal: 'c-modal',
+      confirmModal: 'c-confirm-modal',
       cartIcon: '.user-actions__cart',
       categoryLinks: '.category-item__link',
       searchField: '#product_search',
@@ -71,102 +67,12 @@ export class header extends HTMLElement {
 
   // 이벤트 위임 및 이벤트 리스너를 사용하여 사용자 상호작용 처리
   setupEventListeners() {
-    document.addEventListener('keydown', () => (this.usingKeyboard = true));
-    document.addEventListener('mousedown', () => (this.usingKeyboard = false));
-
-    this.shadowRoot.addEventListener('focusin', this.handleFocusIn.bind(this));
-    this.shadowRoot.addEventListener('focusout', this.handleFocusOut.bind(this));
-
-    this.addToggleEvents(
-      this.elements.categoryMenu,
-      () => this.showElement(this.elements.menuContainer),
-      () => this.hideWithDelay(this.elements.menuContainer)
-    );
-    this.addToggleEvents(
-      this.elements.categoryMenu,
-      () => this.toggleMenu(true),
-      () => this.toggleMenu(false)
-    );
-    this.addToggleEvents(
-      this.elements.locationButton,
-      () => this.showElement(this.elements.locationTooltip),
-      () => this.hideWithDelay(this.elements.locationTooltip)
-    );
-    this.addToggleEvents(
-      this.elements.locationTooltip,
-      () => this.clearHideTimeout(this.elements.locationTooltip),
-      () => this.hideWithDelay(this.elements.locationTooltip)
-    );
-
     this.elements.topBannerCloseButton.addEventListener('click', this.handleCloseBanner.bind(this));
     this.elements.searchButton.addEventListener('click', this.handleSearchProduct.bind(this));
     this.elements.searchField.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') this.handleSearchProduct.bind(this)();
     });
     document.addEventListener('cartUpdated', this.updateCartBadge.bind(this));
-  }
-
-  // 재사용 가능한 이벤트 리스너 추가 함수
-  addToggleEvents(element, showCallback, hideCallback) {
-    element.addEventListener('mouseenter', showCallback);
-    element.addEventListener('mouseleave', hideCallback);
-  }
-
-  // 포커스 이벤트 처리: 키보드 접근성 지원
-  handleFocusIn({ target }) {
-    if (!this.usingKeyboard) return;
-
-    if (target === this.elements.categoryMenuButton) {
-      this.elements.categoryMenu.classList.add('focused');
-      this.showElement(this.elements.menuContainer);
-    } else if (target.closest('.menu-list__item')) {
-      this.handleMenuItemFocus(target);
-    } else if (target === this.elements.locationButton || target.closest('.location-tooltip')) {
-      this.showElement(this.elements.locationTooltip);
-    }
-  }
-
-  // 포커스 아웃 이벤트 처리
-  handleFocusOut({ target }) {
-    if (target === this.elements.categoryMenuButton) {
-      this.elements.categoryMenu.classList.remove('focused');
-    } else if (target.closest('.menu-list__item')) {
-      this.handleMenuItemBlur();
-    } else if (target === this.elements.locationButton || target.closest('.location-tooltip')) {
-      this.hideWithDelay(this.elements.locationTooltip);
-    }
-  }
-
-  // 메뉴 아이템 포커스 처리: 시각적 피드백 제공
-  handleMenuItemFocus(item) {
-    if (this.currentFocusedItem) {
-      this.currentFocusedItem.classList.remove('focused');
-    }
-    const menuList = item.closest('.menu-list__item');
-    if (menuList) {
-      menuList.classList.add('focused');
-      this.currentFocusedItem = menuList;
-    }
-  }
-
-  // 메뉴 아이템 블러 처리
-  handleMenuItemBlur() {
-    setTimeout(() => {
-      if (!this.shadowRoot.activeElement?.closest('.menu-list__item')) {
-        this.hideElement(this.elements.menuContainer);
-        if (this.currentFocusedItem) {
-          this.currentFocusedItem.classList.remove('focused');
-          this.currentFocusedItem = null;
-        }
-      }
-    }, 0);
-  }
-
-  toggleMenu(expand = true) {
-    const { categoryMenuButton, menuContainer } = this.elements;
-
-    menuContainer.hidden = !expand;
-    categoryMenuButton.setAttribute('aria-expanded', String(expand));
   }
 
   // 배너 닫기 처리: localStorage를 사용한 상태 저장
@@ -200,172 +106,91 @@ export class header extends HTMLElement {
 
   // 현재 URL에 따라 활성 카테고리 링크 설정
   setActiveCategoryLink() {
-    const currentUrl = new URL(window.location.href);
-    const category = currentUrl.searchParams.get('category');
-    const search = currentUrl.searchParams.get('search');
-    const pathname = currentUrl.pathname;
+    const { searchParams, pathname } = new URL(window.location.href);
+    const category = searchParams.get('category');
+    const search = searchParams.get('search');
 
+    // 1. 모든 링크의 활성 상태를 초기화합니다.
     this.elements.categoryLinks.forEach((link) => {
       link.classList.remove('__is-active');
     });
 
-    // 검색 파라미터가 있으면 어떤 카테고리도 활성화하지 않음
+    // 2. 검색어가 있으면 아무것도 활성화하지 않고 종료합니다.
     if (search) {
       return;
     }
 
-    if (category === 'best') {
-      this.elements.categoryLinks[1].classList.add('__is-active'); // 베스트
-    } else if (category === 'discount') {
-      this.elements.categoryLinks[2].classList.add('__is-active'); // 알뜰쇼핑
-    } else if (pathname === '/src/pages/product-list/' && !category) {
-      this.elements.categoryLinks[3].classList.add('__is-active'); // 전체보기
-    } else if (category === 'recent' || pathname === '/src/pages/product-collection/') {
-      this.elements.categoryLinks[0].classList.add('__is-active'); // 신상품
+    // 3. 카테고리 활성화 조건을 설정 객체로 관리합니다.
+    //   - 더 구체적인 조건을 위에 배치해야 합니다.
+    const categoryConfig = [
+      {
+        // 조건: 신상품 카테고리이거나, 상품 컬렉션 페이지일 때
+        condition: category === 'recent' || pathname.includes('/product-collection/'),
+        href: 'recent', // '신상품' 링크의 href에 포함될 고유 문자열
+      },
+      {
+        condition: category === 'best',
+        href: 'best', // '베스트' 링크의 href에 포함될 고유 문자열
+      },
+      {
+        condition: category === 'discount',
+        href: 'discount', // '알뜰쇼핑' 링크의 href에 포함될 고유 문자열
+      },
+      {
+        // 조건: 상품 목록 페이지이면서, 카테고리 지정이 없을 때
+        condition: pathname.includes('/product-list/') && !category,
+        href: '/product-list/', // '전체보기' 링크의 href
+      },
+    ];
+
+    // 4. 조건에 맞는 첫 번째 설정을 찾습니다.
+    const activeConfig = categoryConfig.find((config) => config.condition);
+
+    // 5. 해당하는 링크를 찾아 활성화합니다.
+    if (activeConfig) {
+      const linkToActivate = Array.from(this.elements.categoryLinks).find((link) =>
+        link.getAttribute('href').includes(activeConfig.href)
+      );
+
+      if (linkToActivate) {
+        linkToActivate.classList.add('__is-active');
+      }
     }
   }
 
   // 로그인 여부에 따른 조건부 렌더링
   checkAuth() {
-    const auth = JSON.parse(localStorage.getItem('auth') || '{}');
-    const { isAuth, user } = auth;
-    const authLink = this.shadowRoot.querySelector('.auth-links');
-    const locationTooltip = this.shadowRoot.querySelector('.location-tooltip');
+    const { isAuth, user } = getAuth();
 
-    const getAuthButton = () => {
-      if (isAuth) {
-        return `
-        <button
-          type="button"
-          class="auth-links__logout"
-          aria-label="로그아웃 버튼"
-        >로그아웃
-        </button>
-      `;
-      }
-      return `<a href="/src/pages/login/" class="auth-links__login">로그인</a>`;
-    };
+    // 템플릿 함수를 호출하여 HTML을 가져옴
+    const authLinksHtml = createAuthLinksTemplate(isAuth, user);
+    const locationTooltipHtml = createLocationTooltipTemplate(isAuth, user);
 
-    const getUserInfo = () => {
-      if (isAuth) {
-        return `<span class="auth-links__username">${user.name}</span>`;
-      }
-      return `<a href="/src/pages/register/" class="auth-links__signup">회원가입</a>`;
-    };
+    // DOM에 렌더링
+    this.shadowRoot.querySelector('.auth-links').innerHTML = authLinksHtml;
+    this.shadowRoot.querySelector('.location-tooltip').innerHTML = locationTooltipHtml;
 
-    const getLocationTooltipContent = () => {
-      if (isAuth) {
-        return `
-          <p class="modal-notice">배송지 변경</p>
-          <div class="modal-divider"></div>
-          <span class="modal-location-register__title">현재 주소</span>
-          <p class="modal-location__address">${user.address}</p>
-          <span class="modal-location-delivery">${user.morning_delivery ? '샛별배송' : '일반배송'}</span>
-          <div class="location-tooltip-button">
-            <button
-              type="button"
-              class="location-tooltip-button__location"
-              aria-label="주소 변경 모달 버튼"
-            >
-              주소 변경
-            </button>
-          </div>
-        `;
-      } else {
-        return `
-          <p class="modal-notice2"><strong>배송지를 등록</strong>하고<br />구매 가능한 상품을 확인하세요!</p>
-          <div class="location-tooltip-button">
-            <a
-              href="/src/pages/login/"
-              role="button"
-              class="location-tooltip-button__login"
-              aria-label="로그인 페이지로 이동"
-            >로그인</a>
-          </div>
-        `;
-      }
-    };
-
-    const authLinksHtml = `
-      ${getUserInfo()}
-      <div class="divider" aria-hidden="true"></div>
-      ${getAuthButton()}
-      <div class="divider" aria-hidden="true"></div>
-      <div class="customer-service">
-        <a href="#">고객센터</a>
-      </div>
-    `;
-
-    authLink.innerHTML = authLinksHtml;
-    locationTooltip.innerHTML = getLocationTooltipContent();
-
+    // 이벤트 핸들러 바인딩
     if (isAuth) {
       const logOutButton = this.shadowRoot.querySelector('.auth-links__logout');
       logOutButton?.addEventListener('click', this.handleLogout.bind(this));
     }
 
     const locationButton = this.shadowRoot.querySelector('.location-tooltip-button__location');
-    locationButton?.addEventListener(
-      'click',
-      this.handleLocationRegistration.bind(this, user, getLocationTooltipContent)
-    );
+    locationButton?.addEventListener('click', this.handleLocationRegistration.bind(this));
   }
 
   // 로그아웃 기능 메서드
-  handleLogout() {
-    const modalContent = {
-      title: '로그아웃',
-      body: '로그아웃 하시겠습니까?',
-      closeText: '취소',
-      logoutText: '확인',
-    };
+  async handleLogout() {
+    const confirmModal = this.elements.confirmModal;
 
-    const createModalHTML = ({ title, body, closeText, logoutText }) => `
-    <h2 slot="header" class="logout-modal__title">${title}</h2>
-    <p slot="header" class="logout-modal__body">${body}</p>
-    <div slot="footer" class="logout-modal-button">
-      <button slot="footer" type="button" id="modal__close" class="logout-modal__close">${closeText}</button>
-      <button slot="footer" type="button" id="modal__logout" class="logout-modal__logout">${logoutText}</button>
-    </div>
-  `;
+    const userConfirmed = await confirmModal.confirm();
 
-    const setupModal = () => {
-      this.elements.modal.setAttribute('width', '350px');
-      this.elements.modal.setAttribute('height', '180px');
-      this.elements.modal.innerHTML = createModalHTML(modalContent);
-      this.elements.modal.showModal();
-    };
-
-    const initEventListeners = () => {
-      const logout = this.shadowRoot.querySelector('.logout-modal__logout');
-      const close = this.shadowRoot.querySelector('.logout-modal__close');
-
-      const handleLogoutClick = () => {
-        pb.authStore.clear();
-        localStorage.setItem('auth', JSON.stringify(defaultAuthData));
-        location.reload();
-      };
-
-      const handleCloseClick = () => {
-        this.elements.modal.close();
-      };
-
-      logout.addEventListener('click', handleLogoutClick);
-      close.addEventListener('click', handleCloseClick);
-
-      // 모달이 닫힐 때 이벤트 리스너 제거
-      this.elements.modal.addEventListener(
-        'close',
-        () => {
-          logout.removeEventListener('click', handleLogoutClick);
-          close.removeEventListener('click', handleCloseClick);
-        },
-        { once: true }
-      );
-    };
-
-    setupModal();
-    initEventListeners();
+    if (userConfirmed) {
+      pb.authStore.clear();
+      localStorage.setItem('auth', JSON.stringify(defaultAuthData));
+      location.reload();
+    }
   }
 
   // 주소 등록 메서드
@@ -540,32 +365,5 @@ export class header extends HTMLElement {
   // 제품 검색 기능
   handleSearchProduct() {
     window.location.href = `/src/pages/product-list/?search=${this.elements.searchField.value}`;
-  }
-
-  // 유틸리티 함수: 요소 표시
-  showElement(element) {
-    this.clearHideTimeout(element);
-    element.style.display = 'block';
-  }
-
-  // 유틸리티 함수: 요소 숨기기
-  hideElement(element) {
-    element.style.display = 'none';
-  }
-
-  // 유틸리티 함수: 지연 후 요소 숨기기
-  hideWithDelay(element) {
-    this.clearHideTimeout(element);
-    const timeout = setTimeout(() => this.hideElement(element), this.DELAY);
-    this.hideTimeouts.set(element, timeout);
-  }
-
-  // 유틸리티 함수: 숨김 타이머 제거
-  clearHideTimeout(element) {
-    const timeout = this.hideTimeouts.get(element);
-    if (timeout) {
-      clearTimeout(timeout);
-      this.hideTimeouts.delete(element);
-    }
   }
 }
