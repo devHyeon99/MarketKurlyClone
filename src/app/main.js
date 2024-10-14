@@ -1,26 +1,28 @@
 import './main.scss';
-import {
-  header,
-  headerSmall,
-  footer,
-  AdPopup,
-  Sidebar,
-  CartButton,
-  ProductSkeleton,
-} from '@/components';
-import { initializeAuth, initializeAllSwiper, setupViewedProductTracking } from '@/services';
-import { getRecommendedProducts, getDiscountedProducts } from '@/api';
-import { defineCustomElements } from '@/utils';
+import { header } from '@/components/header/header.js';
+import { headerSmall } from '@/components/header-small/header-small.js';
+import { footer } from '@/components/footer/footer.js';
+import { AdPopup } from '@/components/ad-popup/ad-popup.js';
+import { RecentProduct } from '@/components/recent-product/recent-product.js';
+import { CartButton } from '@/components/cart-button/cart-button.js';
+import { ProductSkeleton } from '@/components/product-card-skeleton/product-card-skeleton.js';
+import { ConfirmModal } from '@/components/confirmModal/confirmModal.js';
+import { initializeAuth } from '@/services/auth';
+import { setupViewedProductTracking } from '@/services/viewedProductTracking';
+import { getRecommendedProducts, getDiscountedProducts } from '@/api/products';
+import { defineCustomElements } from '@/utils/customElements';
 import { renderProductSection } from './renderProductSection';
+import { initializeAllSwiper } from './swiperSetup';
 
 const CUSTOM_ELEMENTS = [
   ['c-header', header],
   ['c-header-small', headerSmall],
   ['c-footer', footer],
   ['c-popup', AdPopup],
-  ['c-sidebar', Sidebar],
+  ['c-recent-product', RecentProduct],
   ['c-cart', CartButton],
   ['c-product-skeleton', ProductSkeleton],
+  ['c-confirm-modal', ConfirmModal],
 ];
 
 (async () => {
@@ -30,15 +32,15 @@ const CUSTOM_ELEMENTS = [
   // 2. 웹 컴포넌트 정의
   defineCustomElements(CUSTOM_ELEMENTS);
 
-  // 3. 상품 리스트 렌더링
+  // 3. Swiper 초기화
+  initializeAllSwiper();
+
+  // 4. 상품 클릭 시 최근 본 상품으로 등록하는 이벤트 리스너 초기화
+  setupViewedProductTracking();
+
+  // 5. 상품 리스트 렌더링
   await Promise.all([
     renderProductSection('recommended', getRecommendedProducts),
     renderProductSection('discount', getDiscountedProducts),
   ]);
-
-  // 4. 렌더링된 HTML을 바탕으로 Swiper 초기화
-  initializeAllSwiper();
-
-  // 5. 상품 클릭 시 최근 본 상품으로 등록하는 이벤트 리스너 초기화
-  setupViewedProductTracking();
 })();
