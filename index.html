@@ -1,111 +1,136 @@
 <!doctype html>
 <html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>마켓칼리 - Main</title>
+  </head>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>마켓칼리 - Main</title>
-</head>
-
-<body>
-  <c-popup></c-popup>
-  <c-header></c-header>
-  <c-header-small></c-header-small>
-  <main class="main">
-    <h1 class="sr-only">마켓칼리</h1>
-    <!-- 메인 배너 슬라이드 -->
-    <section class="main-banner">
-      <h2 class="sr-only">메인 배너</h2>
-      <div class="swiper" id="main-banner-swiper">
-        <div class="swiper-wrapper">
-          <div class="swiper-slide">
-            <a href="/">
-              <img src="/assets/images/banner/banner01.webp" alt="부드러운 달콤함, 컬리 과일 가게" width="1900" height="370" />
-            </a>
-          </div>
-          <div class="swiper-slide">
-            <a href="/"><img src="/assets/images/banner/banner02.webp" alt="한눈에 보는 이달의 카드 혜택" width="1900"
-                height="370" />
-            </a>
-          </div>
-          <div class="swiper-slide">
-            <a href="/"><img src="/assets/images/banner/banner03.webp" alt="컬리 퍼플 위크" width="1900" height="370" />
-            </a>
-          </div>
-          <div class="swiper-slide">
-            <a href="/"><img src="/assets/images/banner/banner04.webp" alt="이 주의 특가 한눈에 보기" width="1900" height="370" />
-            </a>
-          </div>
-        </div>
-        <div class="swiper-button-prev" id="banner-prev"></div>
-        <div class="swiper-button-next" id="banner-next"></div>
-      </div>
-    </section>
-
-    <c-sidebar></c-sidebar>
-
-    <!-- 추천 상품 리스트 -->
-    <section class="product-list">
-      <h2 class="sr-only">추천 상품 목록</h2>
-      <div class="product-header">
-        <a class="product-header__link" href="/" aria-label="추천 상품 목록 페이지">
-          <h3 class="product-header__title">🛒이 상품 어때요?</h3>
-        </a>
-        <p class="product-header__sub-title">12조 Pick 상품 총집합💜</p>
-      </div>
-
-      <div class="product-item-group" role="group" aria-busy="true">
-        <div class="swiper" id="recommended-product-list-swiper">
+  <body>
+    <c-popup></c-popup>
+    <c-header></c-header>
+    <c-header-small></c-header-small>
+    <main class="main">
+      <h1 class="sr-only">마켓칼리</h1>
+      <!-- 메인 배너 슬라이드 -->
+      <section class="main-banner">
+        <h2 class="sr-only">메인 배너</h2>
+        <div class="swiper" id="main-banner-swiper">
           <div class="swiper-wrapper">
-            <div class="skelton-wrapper">
-              <c-product-skeleton></c-product-skeleton>
-              <c-product-skeleton></c-product-skeleton>
-              <c-product-skeleton></c-product-skeleton>
-              <c-product-skeleton></c-product-skeleton>
+            <div class="swiper-slide">
+              <a href="/">
+                <img
+                  src="/assets/images/banner/banner01.webp"
+                  alt="부드러운 달콤함, 컬리 과일 가게"
+                  width="1900"
+                  height="370"
+                />
+              </a>
+            </div>
+            <div class="swiper-slide">
+              <a href="/">
+                <img
+                  src="/assets/images/banner/banner02.webp"
+                  alt="한눈에 보는 이달의 카드 혜택"
+                  width="1900"
+                  height="370"
+                />
+              </a>
+            </div>
+            <div class="swiper-slide">
+              <a href="/">
+                <img
+                  src="/assets/images/banner/banner03.webp"
+                  alt="컬리 퍼플 위크"
+                  width="1900"
+                  height="370"
+                />
+              </a>
+            </div>
+            <div class="swiper-slide">
+              <a href="/">
+                <img
+                  src="/assets/images/banner/banner04.webp"
+                  alt="이 주의 특가 한눈에 보기"
+                  width="1900"
+                  height="370"
+                />
+              </a>
             </div>
           </div>
+          <div class="swiper-button-prev" id="banner-prev"></div>
+          <div class="swiper-button-next" id="banner-next"></div>
         </div>
-        <div class="swiper-button-prev" id="recommended-prev"></div>
-        <div class="swiper-button-next" id="recommended-next"></div>
-      </div>
-    </section>
+      </section>
 
-    <!-- 프로모션 배너 -->
-    <section class="promotion-banner">
-      <h2 class="sr-only">프로모션</h2>
-      <a href="/" aria-label="프로모션 페이지로 이동">
-        <img src="/assets/images/banner/line-banner01.webp" alt="더 풍성해진 10월의 퍼플위크" width="1050" height="139">
-      </a>
-    </section>
+      <c-recent-product></c-recent-product>
 
-    <!-- 할인 상품 리스트 -->
-    <section class="product-list">
-      <h2 class="sr-only">할인 상품 목록</h2>
-      <div class="product-header">
-        <a class="product-header__link" href="/" aria-label="할인 상품 목록 페이지">
-          <h3 class="product-header__title">💸놓치면 후회할 가격</h3>
-        </a>
-        <p class="product-header__sub-title">지금 득템하세요💜</p>
-      </div>
+      <!-- 추천 상품 리스트 -->
+      <section class="product-list">
+        <h2 class="sr-only">추천 상품 목록</h2>
+        <div class="product-header">
+          <a class="product-header__link" href="/" aria-label="추천 상품 목록 페이지">
+            <h3 class="product-header__title">🛒이 상품 어때요?</h3>
+          </a>
+          <p class="product-header__sub-title">12조 Pick 상품 총집합💜</p>
+        </div>
 
-      <div class="product-item-group" role="group" aria-busy="true">
-        <div class="swiper" id="discount-product-list-swiper">
-          <div class="swiper-wrapper">
-            <div class="skelton-wrapper">
-              <c-product-skeleton></c-product-skeleton>
-              <c-product-skeleton></c-product-skeleton>
-              <c-product-skeleton></c-product-skeleton>
-              <c-product-skeleton></c-product-skeleton>
+        <div class="product-item-group" role="group" aria-busy="true">
+          <div class="swiper" id="recommended-product-list-swiper">
+            <div class="swiper-wrapper">
+              <div class="skelton-wrapper">
+                <c-product-skeleton></c-product-skeleton>
+                <c-product-skeleton></c-product-skeleton>
+                <c-product-skeleton></c-product-skeleton>
+                <c-product-skeleton></c-product-skeleton>
+              </div>
             </div>
           </div>
+          <div class="swiper-button-prev" id="recommended-prev"></div>
+          <div class="swiper-button-next" id="recommended-next"></div>
         </div>
-        <div class="swiper-button-prev" id="discount-prev"></div>
-        <div class="swiper-button-next" id="discount-next"></div>
-      </div>
-    </section>
-  </main>
-  <c-footer></c-footer>
-  <script type="module" src="/src/app/main.js"></script>
-</body>
+      </section>
 
+      <!-- 프로모션 배너 -->
+      <section class="promotion-banner">
+        <h2 class="sr-only">프로모션</h2>
+        <a href="/" aria-label="프로모션 페이지로 이동">
+          <img
+            src="/assets/images/banner/line-banner01.webp"
+            alt="더 풍성해진 10월의 퍼플위크"
+            width="1050"
+            height="139"
+          />
+        </a>
+      </section>
+
+      <!-- 할인 상품 리스트 -->
+      <section class="product-list">
+        <h2 class="sr-only">할인 상품 목록</h2>
+        <div class="product-header">
+          <a class="product-header__link" href="/" aria-label="할인 상품 목록 페이지">
+            <h3 class="product-header__title">💸놓치면 후회할 가격</h3>
+          </a>
+          <p class="product-header__sub-title">지금 득템하세요💜</p>
+        </div>
+
+        <div class="product-item-group" role="group" aria-busy="true">
+          <div class="swiper" id="discount-product-list-swiper">
+            <div class="swiper-wrapper">
+              <div class="skelton-wrapper">
+                <c-product-skeleton></c-product-skeleton>
+                <c-product-skeleton></c-product-skeleton>
+                <c-product-skeleton></c-product-skeleton>
+                <c-product-skeleton></c-product-skeleton>
+              </div>
+            </div>
+          </div>
+          <div class="swiper-button-prev" id="discount-prev"></div>
+          <div class="swiper-button-next" id="discount-next"></div>
+        </div>
+      </section>
+    </main>
+    <c-footer></c-footer>
+    <script type="module" src="/src/app/main.js"></script>
+  </body>
 </html>
