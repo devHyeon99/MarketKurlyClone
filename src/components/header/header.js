@@ -1,7 +1,7 @@
 import styles from './header.scss?inline';
 import templateHTML from './index.html?raw';
 import { createAuthLinksTemplate, createLocationTooltipTemplate } from './headerTemplates';
-import { cart } from '@/services/cart';
+import { cartStore } from '@/services/cart';
 import { getAuth } from '@/services';
 import { defaultAuthData } from '@/constants';
 import { pb } from '@/api';
@@ -96,7 +96,7 @@ export class header extends HTMLElement {
 
   // 장바구니 뱃지 업데이트 메서드
   updateCartBadge(event) {
-    const cartItemCount = event ? event.detail : cart.length;
+    const cartItemCount = event ? event.detail : cartStore.getCartLength();
     if (cartItemCount > 0) {
       this.elements.cartIcon.innerHTML = `
         <span class="user-actions__badge">${cartItemCount}</span>

@@ -1,12 +1,31 @@
-export const cart = new Proxy(JSON.parse(localStorage.getItem('cartItems') || '[]'), {
-  set(target, property, value) {
-    target[property] = value;
-    localStorage.setItem('cartItems', JSON.stringify(target));
-    document.dispatchEvent(new CustomEvent('cartUpdated', { detail: target.length }));
-    return true;
-  },
-});
+const createCartStore = () => {
+  let items = JSON.parse(localStorage.getItem('cartItems') || '[]');
 
-export function addToCart(item) {
-  cart.push(item);
-}
+  const persist = () => {
+    localStorage.setItem('cartItems', JSON.stringify(items));
+    document.dispatchEvent(new CustomEvent('cartUpdated', { detail: items.length }));
+  };
+
+  return {
+    getCartLength: () => items.length,
+
+    addToCart(item) {
+      items.push(item);
+      persist();
+    },
+
+    addOrIncreaseQuantity(productId, quantity) {
+      const existingItem = items.find((item) => item.productId === productId);
+
+      if (existingItem) {
+        existingItem.quantity += quantity;
+      } else {
+        items.push({ productId, quantity });
+      }
+
+      persist();
+    },
+  };
+};
+
+export const cartStore = createCartStore();

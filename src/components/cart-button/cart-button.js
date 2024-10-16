@@ -1,5 +1,5 @@
 import './cart-button.scss';
-import { cart, addToCart } from '@/services/cart';
+import { cartStore } from '@/services/cart';
 import css from './cart-button.scss?inline';
 
 const cartButtonTemplate = document.createElement('template');
@@ -172,17 +172,7 @@ export class CartButton extends HTMLElement {
   // 장바구니에 제품을 추가, 로컬스토리지에 저장
   addToCart() {
     const productId = this.getAttribute('data-product-id');
-    const existingItemIndex = cart.findIndex((item) => item.productId === productId);
-
-    if (existingItemIndex !== -1) {
-      // 기존 아이템 업데이트
-      const updatedItem = { ...cart[existingItemIndex] };
-      updatedItem.quantity += this.quantity;
-      cart[existingItemIndex] = updatedItem;
-    } else {
-      // 새 아이템 추가
-      addToCart({ productId, quantity: this.quantity });
-    }
+    cartStore.addOrIncreaseQuantity(productId, this.quantity);
 
     this.close();
     this.modalOpen();

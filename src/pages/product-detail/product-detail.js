@@ -1,6 +1,6 @@
 import './product-detail.scss';
 import { defineCustomElements, getImageUrl } from '@/utils/index';
-import { cart, addToCart } from '@/services/cart';
+import { cartStore } from '@/services/cart';
 import { pb } from '@/api/index';
 import { header } from '@/components/header/header';
 import { headerSmall } from '@/components/header-small/header-small';
@@ -378,15 +378,7 @@ const addProductCart = (product) => {
 
   addCartButton.addEventListener('click', () => {
     const productId = product.id;
-    const existingItemIndex = cart.findIndex((item) => item.productId === productId);
-
-    if (existingItemIndex !== -1) {
-      const updatedItem = { ...cart[existingItemIndex] };
-      updatedItem.quantity += parseInt(productCount.textContent);
-      cart[existingItemIndex] = updatedItem;
-    } else {
-      addToCart({ productId, quantity: parseInt(productCount.textContent) });
-    }
+    cartStore.addOrIncreaseQuantity(productId, parseInt(productCount.textContent));
     modalOpen();
   });
 

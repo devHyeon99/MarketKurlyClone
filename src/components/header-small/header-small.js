@@ -1,5 +1,5 @@
 import './header-small.scss';
-import { cart } from '@/services/cart';
+import { cartStore } from '@/services/cart';
 import { pb } from '@/api/index';
 import styles from './header-small.scss?inline';
 import templateHTML from './index.html?raw';
@@ -151,7 +151,7 @@ export class headerSmall extends HTMLElement {
 
   // 장바구니 뱃지 업데이트 메서드
   updateCartBadge(event) {
-    const cartItemCount = event ? event.detail : cart.length;
+    const cartItemCount = event ? event.detail : cartStore.getCartLength();
     if (cartItemCount > 0) {
       this.elements.cartIcon.innerHTML = `
       <span class="user-actions__badge">${cartItemCount}</span>
