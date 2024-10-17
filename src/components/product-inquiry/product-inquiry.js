@@ -1,5 +1,5 @@
 import './product-inquiry.scss';
-import '@/components/modal/modal.scss';
+import '@/components/modal/modal.js';
 import css from './product-inquiry.scss?inline';
 import css2 from '@/components/review-modal/modal.scss?inline';
 import { pb } from '@/api';

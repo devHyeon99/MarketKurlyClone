@@ -1,4 +1,5 @@
 import './header-small.scss';
+import '@/components/modal/modal.js';
 import { cartStore } from '@/services/cart';
 import { pb } from '@/api/index';
 import styles from './header-small.scss?inline';

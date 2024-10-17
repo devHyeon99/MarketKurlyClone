@@ -1,5 +1,6 @@
 import styles from './header.scss?inline';
 import templateHTML from './index.html?raw';
+import '@/components/modal/modal.js';
 import { createAuthLinksTemplate, createLocationTooltipTemplate } from './headerTemplates';
 import { cartStore } from '@/services/cart';
 import { getAuth } from '@/services';
