@@ -7,6 +7,74 @@ const formatReviewCount = (count) => {
   return String(count);
 };
 
+// 상품 리스트/컬렉션 페이지에서 사용하는 그리드형 상품 카드 HTML을 생성하는 함수
+// - 최근 본 상품 추적을 위해 data-id, data-image 속성을 포함
+export const createProductListCard = (product) => {
+  const discountedPrice = Math.floor(product.product_price * (1 - product.discount_rate / 100));
+  const imageUrl = getImageUrl(product);
+  const reviewCountText = formatReviewCount(product.review_count);
+  const authData = JSON.parse(localStorage.getItem('auth'));
+
+  const discountRateHtml =
+    product.discount_rate > 0
+      ? `<span class="product-item__discount-rate">${product.discount_rate}%<span class="sr-only">할인</span></span>`
+      : '';
+
+  const priceHtml =
+    product.discount_rate > 0
+      ? `<p class="product-item__price"><span class="sr-only">정가</span>${product.product_price.toLocaleString()}원</p>`
+      : '';
+
+  const eventProduct = product.event_product
+    ? `<span class="product-item__limited">한정수량</span>`
+    : '';
+
+  const kurlyOnly = product.kurly_only
+    ? `<span class="product-item__kurly-only">Karly Only</span>`
+    : '';
+
+  return html`
+    <div class="product-item">
+      <a
+        class="product-item__link"
+        href="/src/pages/product-detail/?id=${product.id}"
+        data-id="${product.id}"
+        data-image="${imageUrl}"
+        tabindex="0"
+        aria-label="${product.product_name} 상품 페이지로 이동"
+      >
+        <div
+          class="product-item__img"
+          role="img"
+          aria-label="${product.product_name}"
+          style="background-image: url(${imageUrl})"
+        ></div>
+        <p class="product-item__delivery">
+          ${authData?.user?.morning_delivery ? '샛별배송' : '일반배송'}
+        </p>
+        <p class="product-item__title">${product.product_name}</p>
+        <p class="product-item__description">${product.product_description}</p>
+        <div class="price-group">
+          ${priceHtml}
+          <p class="product-item__real-price">
+            ${discountRateHtml}
+            <span class="sr-only">구매가</span>${discountedPrice.toLocaleString()}원
+          </p>
+        </div>
+        <p class="product-item__reviews"><span class="sr-only">리뷰 수</span>${reviewCountText}</p>
+        ${kurlyOnly} ${eventProduct}
+      </a>
+      <c-cart
+        data-product-id="${product.id}"
+        data-product-image="${imageUrl}"
+        data-product-name="${product.product_name}"
+        data-product-price="${product.product_price}"
+        data-discounted-price="${discountedPrice}"
+      ></c-cart>
+    </div>
+  `;
+};
+
 // '전체보기' 카드 HTML을 생성하는 함수
 export const createViewAllCard = () => {
   return html`

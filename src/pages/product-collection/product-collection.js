@@ -1,5 +1,5 @@
 import './product-collection.scss';
-import { defineCustomElements, getImageUrl } from '@/utils/index';
+import { defineCustomElements } from '@/utils/index';
 
 import { pb } from '@/api/index';
 import { header } from '@/components/header/header';
@@ -8,6 +8,8 @@ import { footer } from '@/components/footer/footer';
 import { CartButton } from '@/components/cart-button/cart-button';
 import { SideFilter } from '@/components/side-filter-panel/side-filter-panel';
 import { RecentProduct } from '@/components/recent-product/recent-product';
+import { createProductListCard } from '@/components/product-card/productCard';
+import { setupViewedProductTracking } from '@/services/viewedProductTracking';
 
 (function () {
   const ITEMS_PER_PAGE = 15;
@@ -20,7 +22,6 @@ import { RecentProduct } from '@/components/recent-product/recent-product';
   let isLoading = false;
   let initialCategory;
   let allProducts = [];
-  const authData = JSON.parse(localStorage.getItem('auth'));
 
   const setLoading = (loading) => {
     isLoading = loading;
@@ -67,69 +68,6 @@ import { RecentProduct } from '@/components/recent-product/recent-product';
     });
   };
 
-  const createProductCard = (product) => {
-    const discountedPrice = Math.floor(product.product_price * (1 - product.discount_rate / 100));
-    const imageUrl = getImageUrl(product);
-
-    const discountRateHtml =
-      product.discount_rate > 0
-        ? `<span class="product-item__discount-rate">${product.discount_rate}%<span class="sr-only">할인</span></span>`
-        : '';
-
-    const priceHtml =
-      product.discount_rate > 0
-        ? `<p class="product-item__price"><span class="sr-only">정가</span>${product.product_price.toLocaleString()}원</p>`
-        : '';
-
-    const reviewCountText =
-      product.review_count >= 9999
-        ? '9,999+'
-        : product.review_count >= 999
-          ? '999+'
-          : product.review_count;
-
-    const eventProduct = product.event_product
-      ? `<span class="product-item__limited">한정수량</span>`
-      : '';
-
-    const kurlyOnly = product.kurly_only
-      ? `<span class="product-item__kurly-only">Karly Only</span>`
-      : '';
-
-    return `
-      <div class="product-item">
-        <a
-          class="product-item__link"
-          href="/src/pages/product-detail/?id=${product.id}"
-          tabindex="0"
-          aria-label="${product.product_name} 상품 페이지로 이동"
-        >
-          <div class="product-item__img" role="img" aria-label="${product.product_name}" style="background-image: url(${imageUrl})"></div>
-          <p class="product-item__delivery">${authData.user?.morning_delivery ? '샛별배송' : '일반배송'}</p>
-          <p class="product-item__title">${product.product_name}</p>
-          <p class="product-item__description">${product.product_description}</p>
-          <div class="price-group">
-          ${priceHtml}
-          <p class="product-item__real-price">
-            ${discountRateHtml}
-            <span class="sr-only">구매가</span>${discountedPrice.toLocaleString()}원
-          </p>
-        </div>
-          <p class="product-item__reviews"><span class="sr-only">리뷰 수</span>${reviewCountText}</p>
-          ${kurlyOnly}
-          ${eventProduct}
-        </a>
-        <c-cart
-          data-product-id="${product.id}"
-          data-product-image="${imageUrl}"
-          data-product-name="${product.product_name}"
-          data-product-price="${product.product_price}"
-          data-discounted-price="${discountedPrice}"
-        ></c-cart>
-      </div>
-    `;
-  };
-
   const renderProductList = async (filter = 'recent', page = 1) => {
     try {
       setLoading(true);
@@ -161,7 +99,7 @@ import { RecentProduct } from '@/components/recent-product/recent-product';
               ? '알뜰쇼핑'
               : '';
 
-      itemGroup.innerHTML = paginatedProducts.map(createProductCard).join('');
+      itemGroup.innerHTML = paginatedProducts.map(createProductListCard).join('');
 
       updatePagination(productCount, ITEMS_PER_PAGE, page, filter);
       updateActiveFilter(filter);
@@ -239,57 +177,6 @@ import { RecentProduct } from '@/components/recent-product/recent-product';
     });
   };
 
-  // 최근 본 상품 로컬 스토리지에서 가져오는 함수
-  const getViewedProducts = () => {
-    const viewedProducts = localStorage.getItem('viewedProducts');
-    return viewedProducts ? JSON.parse(viewedProducts) : [];
-  };
-
-  // 최근 본 상품 로컬 스토리지에 저장하는 함수
-  const saveViewedProducts = (products) => {
-    localStorage.setItem('viewedProducts', JSON.stringify(products));
-  };
-
-  // 기간이 24시간 지난 히스토리 삭제 하는 함수
-  const removeExpiredProducts = () => {
-    const viewedProducts = getViewedProducts();
-    const now = new Date().getTime();
-    const updatedProducts = viewedProducts.filter((product) => now < product.expirationTime);
-    saveViewedProducts(updatedProducts);
-  };
-
-  // 최근 본 상품 추가하는 로직
-  const addViewedProduct = (productId, productImage) => {
-    removeExpiredProducts();
-    const viewedProducts = getViewedProducts();
-    const expirationTime = new Date().getTime() + 24 * 60 * 60 * 1000;
-
-    const updatedProducts = viewedProducts.filter((product) => product.id !== productId);
-    updatedProducts.unshift({ id: productId, image: productImage, expirationTime });
-
-    saveViewedProducts(updatedProducts);
-    window.dispatchEvent(new CustomEvent('productViewed'));
-  };
-
-  // 제품 링크에 이벤트 리스너 추가
-  const addProductLinkListeners = () => {
-    document.querySelectorAll('.product-item__link').forEach((link) => {
-      link.addEventListener('click', function () {
-        const productId = new URL(this.href).searchParams.get('id');
-        const productImage = this.querySelector('.product-item__img')
-          .style.backgroundImage.slice(4, -1)
-          .replace(/"/g, '');
-        addViewedProduct(productId, productImage);
-      });
-    });
-  };
-
-  // 최근 본 상품 기능 초기화
-  const initViewedProducts = () => {
-    removeExpiredProducts();
-    addProductLinkListeners();
-  };
-
   const init = async () => {
     defineCustomElements([
       ['c-header', header],
@@ -305,7 +192,7 @@ import { RecentProduct } from '@/components/recent-product/recent-product';
 
     initialCategory = getCategoryFromURL();
     await renderProductList(initialCategory);
-    initViewedProducts();
+    setupViewedProductTracking();
   };
 
   init();

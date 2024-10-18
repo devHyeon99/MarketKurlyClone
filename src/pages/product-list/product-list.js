@@ -1,5 +1,5 @@
 import './product-list.scss';
-import { defineCustomElements, getImageUrl } from '@/utils';
+import { defineCustomElements } from '@/utils';
 import { pb } from '@/api';
 import { header } from '@/components/header/header';
 import { headerSmall } from '@/components/header-small/header-small';
@@ -7,6 +7,8 @@ import { footer } from '@/components/footer/footer';
 import { CartButton } from '@/components/cart-button/cart-button';
 import { SideFilter } from '@/components/side-filter-panel/side-filter-panel';
 import { RecentProduct } from '@/components/recent-product/recent-product';
+import { createProductListCard } from '@/components/product-card/productCard';
+import { setupViewedProductTracking } from '@/services/viewedProductTracking';
 
 (function () {
   // 페이지 수 상수로 정의
@@ -17,7 +19,6 @@ import { RecentProduct } from '@/components/recent-product/recent-product';
   let allProducts = [];
   let currentCategory = '';
   let currentFilter = '';
-  const authData = JSON.parse(localStorage.getItem('auth'));
 
   // 로딩 상태를 설정하는 함수
   const setLoading = (loading) => {
@@ -55,70 +56,6 @@ import { RecentProduct } from '@/components/recent-product/recent-product';
     });
   };
 
-  // 단일 상품 정보를 받아 HTML로 상품 카드를 생성하는 함수
-  const createProductCard = (product) => {
-    const discountedPrice = Math.floor(product.product_price * (1 - product.discount_rate / 100));
-    const imageUrl = getImageUrl(product);
-
-    const discountRateHtml =
-      product.discount_rate > 0
-        ? `<span class="product-item__discount-rate">${product.discount_rate}%<span class="sr-only">할인</span></span>`
-        : '';
-
-    const priceHtml =
-      product.discount_rate > 0
-        ? `<p class="product-item__price"><span class="sr-only">정가</span>${product.product_price.toLocaleString()}원</p>`
-        : '';
-
-    const reviewCountText =
-      product.review_count >= 9999
-        ? '9,999+'
-        : product.review_count >= 999
-          ? '999+'
-          : product.review_count;
-
-    const eventProduct = product.event_product
-      ? `<span class="product-item__limited">한정수량</span>`
-      : '';
-
-    const kurlyOnly = product.kurly_only
-      ? `<span class="product-item__kurly-only">Karly Only</span>`
-      : '';
-
-    return `
-    <div class="product-item">
-      <a
-        class="product-item__link"
-        href="/src/pages/product-detail/?id=${product.id}"
-        tabindex="0"
-        aria-label="${product.product_name} 상품 페이지로 이동"
-      >
-        <div class="product-item__img" role="img" aria-label="${product.product_name}" style="background-image: url(${imageUrl})"></div>
-        <p class="product-item__delivery">${authData.user?.morning_delivery ? '샛별배송' : '일반배송'}</p>
-        <p class="product-item__title">${product.product_name}</p>
-        <p class="product-item__description">${product.product_description}</p>
-        <div class="price-group">
-          ${priceHtml}
-          <p class="product-item__real-price">
-            ${discountRateHtml}
-            <span class="sr-only">구매가</span>${discountedPrice.toLocaleString()}원
-          </p>
-        </div>
-        <p class="product-item__reviews"><span class="sr-only">리뷰 수</span>${reviewCountText}</p>
-        ${kurlyOnly}
-        ${eventProduct}
-      </a>
-      <c-cart
-        data-product-id="${product.id}"
-        data-product-image="${imageUrl}"
-        data-product-name="${product.product_name}"
-        data-product-price="${product.product_price}"
-        data-discounted-price="${discountedPrice}"
-      ></c-cart>
-    </div>
-  `;
-  };
-
   // 상품 목록을 렌더링하는 함수. 필터와 페이지 정보를 받아 상품을 가져오고 화면에 표시
   const renderProductList = (products, page = 1) => {
     const startIndex = (page - 1) * ITEMS_PER_PAGE;
@@ -129,7 +66,7 @@ import { RecentProduct } from '@/components/recent-product/recent-product';
     const itemGroup = document.querySelector('.product-item-group');
 
     countText.textContent = `총 ${products.length}건`;
-    itemGroup.innerHTML = displayedProducts.map(createProductCard).join('');
+    itemGroup.innerHTML = displayedProducts.map(createProductListCard).join('');
 
     updatePagination(products.length, ITEMS_PER_PAGE, page);
     updateActiveFilter(currentFilter);
@@ -232,57 +169,6 @@ import { RecentProduct } from '@/components/recent-product/recent-product';
     }
   };
 
-  // 최근 본 상품 로컬 스토리지에서 가져오는 함수
-  const getViewedProducts = () => {
-    const viewedProducts = localStorage.getItem('viewedProducts');
-    return viewedProducts ? JSON.parse(viewedProducts) : [];
-  };
-
-  // 최근 본 상품 로컬 스토리지에 저장하는 함수
-  const saveViewedProducts = (products) => {
-    localStorage.setItem('viewedProducts', JSON.stringify(products));
-  };
-
-  // 기간이 24시간 지난 히스토리 삭제 하는 함수
-  const removeExpiredProducts = () => {
-    const viewedProducts = getViewedProducts();
-    const now = new Date().getTime();
-    const updatedProducts = viewedProducts.filter((product) => now < product.expirationTime);
-    saveViewedProducts(updatedProducts);
-  };
-
-  // 최근 본 상품 추가하는 로직
-  const addViewedProduct = (productId, productImage) => {
-    removeExpiredProducts();
-    const viewedProducts = getViewedProducts();
-    const expirationTime = new Date().getTime() + 24 * 60 * 60 * 1000;
-
-    const updatedProducts = viewedProducts.filter((product) => product.id !== productId);
-    updatedProducts.unshift({ id: productId, image: productImage, expirationTime });
-
-    saveViewedProducts(updatedProducts);
-    window.dispatchEvent(new CustomEvent('productViewed'));
-  };
-
-  // 제품 링크에 이벤트 리스너 추가
-  const addProductLinkListeners = () => {
-    document.querySelectorAll('.product-item__link').forEach((link) => {
-      link.addEventListener('click', function () {
-        const productId = new URL(this.href).searchParams.get('id');
-        const productImage = this.querySelector('.product-item__img')
-          .style.backgroundImage.slice(4, -1)
-          .replace(/"/g, '');
-        addViewedProduct(productId, productImage);
-      });
-    });
-  };
-
-  // 최근 본 상품 기능 초기화
-  const initViewedProducts = () => {
-    removeExpiredProducts();
-    addProductLinkListeners();
-  };
-
   // 커스텀 엘리먼트를 정의, 이벤트 리스너를 설정, URL 파라미터를 읽어와 초기 상품 목록을 렌더링
   const init = async () => {
     defineCustomElements([
@@ -305,7 +191,7 @@ import { RecentProduct } from '@/components/recent-product/recent-product';
       setLoading(true);
       allProducts = await fetchAllProducts(currentCategory, currentSearch);
       renderProductList(allProducts);
-      initViewedProducts();
+      setupViewedProductTracking();
     } catch (error) {
       console.error('Failed to fetch products:', error);
     } finally {
